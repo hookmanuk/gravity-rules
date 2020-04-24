@@ -1,0 +1,8 @@
+C:\Unity Projects\GravityRules\HighScores\bin\Debug\netstandard2.0\AzureTableStorage.deps.json
+C:\Unity Projects\GravityRules\HighScores\bin\Debug\netstandard2.0\AzureTableStorage.dll
+C:\Unity Projects\GravityRules\HighScores\bin\Debug\netstandard2.0\AzureTableStorage.pdb
+C:\Unity Projects\GravityRules\HighScores\obj\Debug\netstandard2.0\AzureTableStorage.csprojAssemblyReference.cache
+C:\Unity Projects\GravityRules\HighScores\obj\Debug\netstandard2.0\AzureTableStorage.AssemblyInfoInputs.cache
+C:\Unity Projects\GravityRules\HighScores\obj\Debug\netstandard2.0\AzureTableStorage.AssemblyInfo.cs
+C:\Unity Projects\GravityRules\HighScores\obj\Debug\netstandard2.0\AzureTableStorage.dll
+C:\Unity Projects\GravityRules\HighScores\obj\Debug\netstandard2.0\AzureTableStorage.pdb

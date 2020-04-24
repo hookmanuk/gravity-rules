@@ -1,0 +1,16 @@
+C:\Unity Projects\GravityRules\Tests\bin\Debug\netcoreapp3.1\Tests.exe
+C:\Unity Projects\GravityRules\Tests\bin\Debug\netcoreapp3.1\Tests.deps.json
+C:\Unity Projects\GravityRules\Tests\bin\Debug\netcoreapp3.1\Tests.runtimeconfig.json
+C:\Unity Projects\GravityRules\Tests\bin\Debug\netcoreapp3.1\Tests.runtimeconfig.dev.json
+C:\Unity Projects\GravityRules\Tests\bin\Debug\netcoreapp3.1\Tests.dll
+C:\Unity Projects\GravityRules\Tests\bin\Debug\netcoreapp3.1\Tests.pdb
+C:\Unity Projects\GravityRules\Tests\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll
+C:\Unity Projects\GravityRules\Tests\bin\Debug\netcoreapp3.1\Microsoft.WindowsAzure.Storage.dll
+C:\Unity Projects\GravityRules\Tests\bin\Debug\netcoreapp3.1\AzureTableStorage.dll
+C:\Unity Projects\GravityRules\Tests\bin\Debug\netcoreapp3.1\AzureTableStorage.pdb
+C:\Unity Projects\GravityRules\Tests\obj\Debug\netcoreapp3.1\Tests.csprojAssemblyReference.cache
+C:\Unity Projects\GravityRules\Tests\obj\Debug\netcoreapp3.1\Tests.AssemblyInfoInputs.cache
+C:\Unity Projects\GravityRules\Tests\obj\Debug\netcoreapp3.1\Tests.AssemblyInfo.cs
+C:\Unity Projects\GravityRules\Tests\obj\Debug\netcoreapp3.1\Tests.csproj.CopyComplete
+C:\Unity Projects\GravityRules\Tests\obj\Debug\netcoreapp3.1\Tests.dll
+C:\Unity Projects\GravityRules\Tests\obj\Debug\netcoreapp3.1\Tests.pdb

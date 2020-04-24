@@ -1,0 +1,5 @@
+C:\Unity Projects\GravityRules\HighScores\bin\Debug\netstandard2.0\HighScores.deps.json
+C:\Unity Projects\GravityRules\HighScores\bin\Debug\netstandard2.0\HighScores.dll
+C:\Unity Projects\GravityRules\HighScores\obj\Debug\netstandard2.0\HighScores.csprojAssemblyReference.cache
+C:\Unity Projects\GravityRules\HighScores\obj\Debug\netstandard2.0\HighScores.AssemblyInfoInputs.cache
+C:\Unity Projects\GravityRules\HighScores\obj\Debug\netstandard2.0\HighScores.AssemblyInfo.cs
