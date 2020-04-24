@@ -10,6 +10,8 @@ TagManager:
   - RightController
   - PlayerBody
   - Engine
+  - FutureMe
+  - Planet
   layers:
   - Default
   - TransparentFX

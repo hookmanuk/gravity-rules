@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.gravityrules.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "C:\\Unity Projects\\GravityRules\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "action_manifest_path": "C:\\Unity Projects\\gravity-rules\\Assets\\StreamingAssets\\SteamVR\\actions.json",
       "strings": {
         "en_us": {
           "name": "GravityRules [Testing]"

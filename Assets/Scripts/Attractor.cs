@@ -35,18 +35,30 @@ public class Attractor : MonoBehaviour
 	}
 
 	void Attract()
-	{				
-        Vector3 direction = rb.position - _player.position;
-
-        float forceMagnitude = G * (rb.mass * _player.mass) / direction.sqrMagnitude;
-
-		Vector3 force = direction.normalized * forceMagnitude;
-
-		_player.AddForce(force);
+	{				        
+		_player.AddForce(GetForce(_player.transform));
     }
+
+	public Vector3 GetForce(Transform sourceTransform)
+	{
+		Vector3 force = new Vector3();
+		Vector3 direction = rb.position - sourceTransform.position;
+
+		//if not enabled, _player will not be set
+		if (_player != null)
+		{
+			float forceMagnitude = G * (rb.mass * _player.mass) / direction.sqrMagnitude;
+
+			force = direction.normalized * forceMagnitude;
+		}
+
+		return force;
+	}
 
 	private void OnCollisionEnter(Collision collision)
 	{
+		Debug.Log(collision.collider.gameObject.name);
+
 		//_player.velocity = Vector3.zero;
 		_player.isKinematic = true;
 		Debug.Log("hit");

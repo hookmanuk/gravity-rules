@@ -24,6 +24,9 @@ public class GameState : MonoBehaviour
     public SimpleHelvetica HighScoresText;
     public SimpleHelvetica YourScoreText;
     public SimpleHelvetica InstructionsText;
+    public GameObject FutureMe;
+    public GameObject Spaceship;
+    
     public float Score = 10000;
 
     private Stack<FrameInfo> _frames;
@@ -32,6 +35,9 @@ public class GameState : MonoBehaviour
     private HUD _hud;
     private float _startScore;
     private string _playerName = "";
+    private List<GameObject> FutureMes;
+    private Attractor[] Attractors;
+    private LineRenderer LineRenderer;
 
     public float WorldRate = 60f;
     public float ScoreMultiplier = 1f;
@@ -41,7 +47,7 @@ public class GameState : MonoBehaviour
     public List<highscore> Highscores;
     public bool Started;
     public bool IsWaitingForName;
-    private int ScoreEntering;    
+    private int ScoreEntering;
 
     // Start is called before the first frame update
     void Start()
@@ -60,6 +66,21 @@ public class GameState : MonoBehaviour
 
         ScoreManager = new scoremanager();        
         UpdateHighscores();
+
+        FutureMes = new List<GameObject>();
+
+        for (int i = 0; i < 40; i++)
+        {
+            FutureMes.Add(Instantiate(FutureMe));
+        }
+        FutureMe.SetActive(false);
+
+        Attractors = FindObjectsOfType<Attractor>();
+
+        LineRenderer = gameObject.AddComponent<LineRenderer>();
+        LineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        LineRenderer.widthMultiplier = 0.01f;
+        LineRenderer.positionCount = 41;
     }
 
     private async void UpdateHighscores()
@@ -151,6 +172,26 @@ public class GameState : MonoBehaviour
             }
 
             _hud.SetSpeed(_player.velocity.magnitude / 100f);
+
+            LineRenderer.SetPosition(0, Spaceship.transform.position);
+
+            //loop through future mes and apply forces to them from both the current velocity and attractor planets
+            for (int i = 0; i < 40; i++)
+            {
+                Transform previousTransform;
+
+                previousTransform = (i == 0 ? Spaceship.transform : FutureMes[i - 1].transform);
+
+                FutureMes[i].transform.position = previousTransform.position + (_player.velocity * 0.1f); //not sure about this 0.1 multiplier
+
+                foreach (Attractor attractor in Attractors)
+                {
+                    Console.WriteLine(i.ToString() + ": " + attractor.GetForce(previousTransform).magnitude);
+                    FutureMes[i].transform.position += (attractor.GetForce(previousTransform) * 0.1f); //not sure about this 0.1 multiplier
+                }
+
+                LineRenderer.SetPosition(i + 1, FutureMes[i].transform.position);
+            }           
         }
     }
 
