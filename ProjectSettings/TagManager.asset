@@ -12,6 +12,9 @@ TagManager:
   - Engine
   - FutureMe
   - Planet
+  - Spaceship
+  - SpaceshipHUD
+  - SpaceshipExplosion
   layers:
   - Default
   - TransparentFX

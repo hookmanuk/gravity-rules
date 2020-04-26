@@ -8,6 +8,8 @@ public class Attractor : MonoBehaviour
 
 	private Rigidbody _player;
 	private GameState _gameState;
+	private Vector3 _hitForce;
+	private bool _isCameraHit;	
 
 	public Rigidbody rb;
 
@@ -47,20 +49,38 @@ public class Attractor : MonoBehaviour
 		//if not enabled, _player will not be set
 		if (_player != null)
 		{
-			float forceMagnitude = G * (rb.mass * _player.mass) / direction.sqrMagnitude;
+			if (!_isCameraHit)
+			{
+				float forceMagnitude = G * (rb.mass * _player.mass) / direction.sqrMagnitude;
 
-			force = direction.normalized * forceMagnitude;
+				force = direction.normalized * forceMagnitude;
+			}
+			else
+			{
+				force = _hitForce;
+			}
 		}
 
 		return force;
 	}
 
-	private void OnCollisionEnter(Collision collision)
+	private void OnTriggerEnter(Collider other)
 	{
-		Debug.Log(collision.collider.gameObject.name);
+		if (other.gameObject.name == "[CameraRig]")
+		{			
+			//player camera hit, set constant force to use from now on
+			_hitForce = GetForce(_player.transform);
+			_isCameraHit = true;
+		}
+		else if (other.gameObject.tag == "Spaceship")
+		{
+			ResetAttractor();
+			_gameState.ExplodeSpaceship();			
+		}
+	}
 
-		//_player.velocity = Vector3.zero;
-		_player.isKinematic = true;
-		Debug.Log("hit");
+	public void ResetAttractor()
+	{
+		_isCameraHit = false;
 	}
 }

@@ -48,6 +48,7 @@ public class GameState : MonoBehaviour
     public scoremanager ScoreManager;
     public List<highscore> Highscores;
     public bool Started;
+    public bool IsFinished;
     public bool IsWaitingForName;
     public bool IsRewinding;
     private int ScoreEntering;
@@ -262,28 +263,33 @@ public class GameState : MonoBehaviour
             else
             {
                 //Rewind the gamestate!
-                FrameInfo frame = null;
-                for (int i = 0; i < _rewindMultiplier; i++)
-                {
-                    if (_frames.Count > 0)
-                    {
-                        frame = _frames.Pop();
-                    }
-                }
-
-                if (frame != null)
-                {
-                    GetComponent<Transform>().SetPositionAndRotation(frame.PlayerPosition, frame.PlayerRotation);
-                    _player.velocity = frame.PlayerVelocity;
-                    if (frame.CurrentCheckpoint != _currentCheckpoint)
-                    {
-                        _currentCheckpoint = frame.CurrentCheckpoint;
-                        EnableCheckpoint(_currentCheckpoint);
-                    }
-
-                    Score = Score + (frame.ScoreDiff * ScoreRewindMultiplier);
-                }
+                RewindSomeFrames();
             }
+        }
+    }
+
+    public void RewindSomeFrames(int frames = 1)
+    {
+        FrameInfo frame = null;
+        for (int i = 0; i < _rewindMultiplier * frames; i++)
+        {
+            if (_frames.Count > 0)
+            {
+                frame = _frames.Pop();
+            }
+        }
+
+        if (frame != null)
+        {
+            GetComponent<Transform>().SetPositionAndRotation(frame.PlayerPosition, frame.PlayerRotation);
+            _player.velocity = frame.PlayerVelocity;
+            if (frame.CurrentCheckpoint != _currentCheckpoint)
+            {
+                _currentCheckpoint = frame.CurrentCheckpoint;
+                EnableCheckpoint(_currentCheckpoint);
+            }
+
+            Score = Score + (frame.ScoreDiff * ScoreRewindMultiplier);
         }
     }
 
@@ -320,7 +326,8 @@ public class GameState : MonoBehaviour
 
         UpdateScoreText(true);
 
-        IsWaitingForName = true;        
+        IsWaitingForName = true;
+        IsFinished = true;        
 
         ReInitGame(); //reset player to show scores on screen
     }
@@ -345,11 +352,19 @@ public class GameState : MonoBehaviour
 
     public void ReInitGame()
     {
+        ToggleShip(true);
         GetComponent<Transform>().SetPositionAndRotation(_startPosition, _startRotation);
+
+        foreach (var item in Attractors)
+        {
+            item.ResetAttractor();
+        }
+
         _player.velocity = new Vector3(0, 0, 0);
         _player.isKinematic = false;
         Score = _startScore;
         _hud.SetScore(Convert.ToInt32(Score));
+        IsFinished = false;
         Started = false;
         ShowText();
         _frames.Clear();
@@ -392,5 +407,26 @@ public class GameState : MonoBehaviour
         InstructionsText.gameObject.SetActive(true);
         //Material textMaterial = HighScoresText.GetComponent<Renderer>().material;
         //textMaterial.color = new Color(255, 255, 255, 255);
+    }
+
+    public void ExplodeSpaceship()
+    {
+        GameObject explosion = GameObject.FindGameObjectWithTag("SpaceshipExplosion");
+        RewindSomeFrames(2);                
+        _player.isKinematic = true;
+        IsFinished = true;
+        Started = false;
+        explosion.GetComponent<ParticleSystem>().Play();
+        explosion.GetComponentInChildren<AudioSource>().Play();
+        ToggleShip(false);
+    }
+
+    private void ToggleShip(bool enable)
+    {
+        GameObject.FindGameObjectWithTag("Spaceship").GetComponent<MeshRenderer>().enabled = enable;
+        foreach (var item in GameObject.FindGameObjectWithTag("SpaceshipHUD").GetComponentsInChildren<MeshRenderer>())
+        {
+            item.enabled = enable;
+        }        
     }
 }

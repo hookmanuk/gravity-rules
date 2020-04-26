@@ -30,45 +30,42 @@ public class Thruster : MonoBehaviour
 
     // Update is called once per frame
     void FixedUpdate()
-    {
-        if (!_gameState.IsWaitingForName)
+    {        
+        if (!_gameState.IsFinished && Thrust.axis != 0)
         {
-            if (Thrust.axis != 0)
+            if (!_gameState.Started)
             {
-                if (!_gameState.Started)
-                {
-                    _gameState.Started = true;
+                _gameState.Started = true;
                     
-                    _gameState.FadeOutText();
-                }
-                //get controller
-                if (Thrust.activeDevice == SteamVR_Input_Sources.RightHand)
-                {
-                    _controller = GameObject.FindWithTag("RightController");
-                }
-                else if (Thrust.activeDevice == SteamVR_Input_Sources.LeftHand)
-                {
-                    _controller = GameObject.FindWithTag("LeftController");
-                }
-
-                if (_controller != null)
-                {
-                    _player.AddForce(_controller.transform.forward * f_Multiplier * Thrust.axis, ForceMode.Force);
-
-                    _gameState.ThrustActiveUpdateScore();
-
-                    if (!ThrustSound.isPlaying)
-                    {
-                        ThrustSound.Play();
-                        _particleSystem.Play();
-                    }
-                }
+                _gameState.FadeOutText();
             }
-            else
+            //get controller
+            if (Thrust.activeDevice == SteamVR_Input_Sources.RightHand)
             {
-                StopThrusters();
+                _controller = GameObject.FindWithTag("RightController");
+            }
+            else if (Thrust.activeDevice == SteamVR_Input_Sources.LeftHand)
+            {
+                _controller = GameObject.FindWithTag("LeftController");
+            }
+
+            if (_controller != null)
+            {
+                _player.AddForce(_controller.transform.forward * f_Multiplier * Thrust.axis, ForceMode.Force);
+
+                _gameState.ThrustActiveUpdateScore();
+
+                if (!ThrustSound.isPlaying)
+                {
+                    ThrustSound.Play();
+                    _particleSystem.Play();
+                }
             }
         }
+        else
+        {
+            StopThrusters();
+        }     
     }
 
     void OnEnable()
@@ -84,5 +81,10 @@ public class Thruster : MonoBehaviour
             ThrustSound.Stop();
             _particleSystem.Stop();
         }
+    }
+
+    public void ExplodeShip()
+    {
+
     }
 }

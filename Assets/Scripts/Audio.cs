@@ -11,8 +11,7 @@ public class Audio : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {
-        _audioSource = GetComponent<AudioSource>();
+    {        
         _totalTimeSamples = MusicForwards.samples;
     }
 
@@ -24,6 +23,10 @@ public class Audio : MonoBehaviour
 
     public void Forwards(bool start)
     {
+        if (_audioSource == null)
+        {
+            _audioSource = GetComponent<AudioSource>();
+        }
         int backwardSamples = _audioSource.timeSamples;
 
         _audioSource.clip = MusicForwards;
