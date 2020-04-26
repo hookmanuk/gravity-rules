@@ -19,6 +19,7 @@ public class GameState : MonoBehaviour
     private float _scorePrevious = 10000;
 
     public SteamVR_Action_Boolean Restart;
+    public SteamVR_Action_Boolean TracePath;
     public SteamVR_Action_Single Rewind;
     public GameObject HUD;
     public SimpleHelvetica HighScoresText;
@@ -38,6 +39,7 @@ public class GameState : MonoBehaviour
     private List<GameObject> FutureMes;
     private Attractor[] Attractors;
     private LineRenderer LineRenderer;
+    public bool IsTracingPath;
 
     public float WorldRate = 60f;
     public float ScoreMultiplier = 1f;
@@ -47,18 +49,24 @@ public class GameState : MonoBehaviour
     public List<highscore> Highscores;
     public bool Started;
     public bool IsWaitingForName;
+    public bool IsRewinding;
     private int ScoreEntering;
+    private Audio _audio;
 
     // Start is called before the first frame update
     void Start()
     {
         _startScore = Score;
         _player = GameObject.FindWithTag("PlayerBody").GetComponent<Rigidbody>();
+        _audio = GetComponentInChildren<Audio>();
+        _audio.Forwards(true);
 
         Transform startTransform = GetComponent<Transform>();
         _startPosition = new Vector3(startTransform.position.x, startTransform.position.y, startTransform.position.z);
         _startRotation = new Quaternion(startTransform.rotation.x, startTransform.rotation.y, startTransform.rotation.z, startTransform.rotation.w);
         Restart.onStateDown += Restart_onStateDown;
+        TracePath.onStateDown += TracePath_onStateDown;
+        TracePath.onStateUp += TracePath_onStateUp;
 
         _frames = new Stack<FrameInfo>();
 
@@ -120,6 +128,16 @@ public class GameState : MonoBehaviour
         }        
     }
 
+    private void TracePath_onStateDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        IsTracingPath = true;
+    }
+
+    private void TracePath_onStateUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        IsTracingPath = false;
+    }
+
     private void EnterName()
     {
         IsWaitingForName = false;
@@ -157,14 +175,26 @@ public class GameState : MonoBehaviour
         {
             if (Rewind.axis == 0)
             {
+                if (IsRewinding)
+                {
+                    //start playing music forwards
+                    _audio.Forwards(false);
+                }
+                IsRewinding = false;
                 _secondsRewound = 0;
                 _rewindMultiplier = 1;
 
-                Score = Score - (ScoreMultiplier / WorldRate);
+                Score = Score - (ScoreMultiplier * (IsTracingPath ? 2f : 1f) / WorldRate);
                 _hud.SetScore(Convert.ToInt32(Score));
             }
             else
             {
+                if (!IsRewinding)
+                {
+                    //start playing music backwards
+                    _audio.Reverse();
+                }
+                IsRewinding = true;
                 _secondsRewound = _secondsRewound + (1f / WorldRate);
                 _rewindMultiplier = 1 + (int)Math.Floor(_secondsRewound / 5f);
 
@@ -173,25 +203,40 @@ public class GameState : MonoBehaviour
 
             _hud.SetSpeed(_player.velocity.magnitude / 100f);
 
-            LineRenderer.SetPosition(0, Spaceship.transform.position);
-
-            //loop through future mes and apply forces to them from both the current velocity and attractor planets
-            for (int i = 0; i < 40; i++)
+            if (IsTracingPath)
             {
-                Transform previousTransform;
-
-                previousTransform = (i == 0 ? Spaceship.transform : FutureMes[i - 1].transform);
-
-                FutureMes[i].transform.position = previousTransform.position + (_player.velocity * 0.1f); //not sure about this 0.1 multiplier
-
-                foreach (Attractor attractor in Attractors)
+                if (!LineRenderer.enabled)
                 {
-                    Console.WriteLine(i.ToString() + ": " + attractor.GetForce(previousTransform).magnitude);
-                    FutureMes[i].transform.position += (attractor.GetForce(previousTransform) * 0.1f); //not sure about this 0.1 multiplier
+                    LineRenderer.enabled = true;
                 }
+                
+                LineRenderer.SetPosition(0, Spaceship.transform.position);
 
-                LineRenderer.SetPosition(i + 1, FutureMes[i].transform.position);
-            }           
+                //loop through future mes and apply forces to them from both the current velocity and attractor planets
+                for (int i = 0; i < 40; i++)
+                {
+                    Transform previousTransform;
+
+                    previousTransform = (i == 0 ? Spaceship.transform : FutureMes[i - 1].transform);
+
+                    FutureMes[i].transform.position = previousTransform.position + (_player.velocity * 0.1f); //not sure about this 0.1 multiplier
+
+                    foreach (Attractor attractor in Attractors)
+                    {
+                        Console.WriteLine(i.ToString() + ": " + attractor.GetForce(previousTransform).magnitude);
+                        FutureMes[i].transform.position += (attractor.GetForce(previousTransform) * 0.1f); //not sure about this 0.1 multiplier
+                    }
+
+                    LineRenderer.SetPosition(i + 1, FutureMes[i].transform.position);
+                }
+            }
+            else
+            {
+                if (LineRenderer.enabled)
+                {
+                    LineRenderer.enabled = false;
+                }
+            }
         }
     }
 

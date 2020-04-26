@@ -61,6 +61,8 @@ namespace Valve.VR
         
         private static SteamVR_Action_Single p_space_Rewind;
         
+        private static SteamVR_Action_Boolean p_space_TracePath;
+        
         public static SteamVR_Action_Boolean default_InteractUI
         {
             get
@@ -237,6 +239,14 @@ namespace Valve.VR
             }
         }
         
+        public static SteamVR_Action_Boolean space_TracePath
+        {
+            get
+            {
+                return SteamVR_Actions.p_space_TracePath.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
         private static void InitializeActionArrays()
         {
             Valve.VR.SteamVR_Input.actions = new Valve.VR.SteamVR_Action[] {
@@ -261,7 +271,8 @@ namespace Valve.VR
                     SteamVR_Actions.mixedreality_ExternalCamera,
                     SteamVR_Actions.space_Thruster,
                     SteamVR_Actions.space_Restart,
-                    SteamVR_Actions.space_Rewind};
+                    SteamVR_Actions.space_Rewind,
+                    SteamVR_Actions.space_TracePath};
             Valve.VR.SteamVR_Input.actionsIn = new Valve.VR.ISteamVR_Action_In[] {
                     SteamVR_Actions.default_InteractUI,
                     SteamVR_Actions.default_Teleport,
@@ -283,7 +294,8 @@ namespace Valve.VR
                     SteamVR_Actions.mixedreality_ExternalCamera,
                     SteamVR_Actions.space_Thruster,
                     SteamVR_Actions.space_Restart,
-                    SteamVR_Actions.space_Rewind};
+                    SteamVR_Actions.space_Rewind,
+                    SteamVR_Actions.space_TracePath};
             Valve.VR.SteamVR_Input.actionsOut = new Valve.VR.ISteamVR_Action_Out[] {
                     SteamVR_Actions.default_Haptic};
             Valve.VR.SteamVR_Input.actionsVibration = new Valve.VR.SteamVR_Action_Vibration[] {
@@ -302,7 +314,8 @@ namespace Valve.VR
                     SteamVR_Actions.platformer_Jump,
                     SteamVR_Actions.buggy_Brake,
                     SteamVR_Actions.buggy_Reset,
-                    SteamVR_Actions.space_Restart};
+                    SteamVR_Actions.space_Restart,
+                    SteamVR_Actions.space_TracePath};
             Valve.VR.SteamVR_Input.actionsSingle = new Valve.VR.SteamVR_Action_Single[] {
                     SteamVR_Actions.default_Squeeze,
                     SteamVR_Actions.buggy_Throttle,
@@ -332,7 +345,8 @@ namespace Valve.VR
                     SteamVR_Actions.buggy_Reset,
                     SteamVR_Actions.space_Thruster,
                     SteamVR_Actions.space_Restart,
-                    SteamVR_Actions.space_Rewind};
+                    SteamVR_Actions.space_Rewind,
+                    SteamVR_Actions.space_TracePath};
         }
         
         private static void PreInitActions()
@@ -359,6 +373,7 @@ namespace Valve.VR
             SteamVR_Actions.p_space_Thruster = ((SteamVR_Action_Single)(SteamVR_Action.Create<SteamVR_Action_Single>("/actions/Space/in/Thruster")));
             SteamVR_Actions.p_space_Restart = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/Space/in/Restart")));
             SteamVR_Actions.p_space_Rewind = ((SteamVR_Action_Single)(SteamVR_Action.Create<SteamVR_Action_Single>("/actions/Space/in/Rewind")));
+            SteamVR_Actions.p_space_TracePath = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/Space/in/TracePath")));
         }
     }
 }

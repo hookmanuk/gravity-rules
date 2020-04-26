@@ -95,6 +95,10 @@
       "name": "/actions/Space/in/Rewind",
       "type": "vector1",
       "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/Space/in/TracePath",
+      "type": "boolean"
     }
   ],
   "action_sets": [

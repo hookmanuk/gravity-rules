@@ -40,5 +40,13 @@ namespace Valve.VR
                 return SteamVR_Actions.space_Rewind;
             }
         }
+        
+        public virtual SteamVR_Action_Boolean TracePath
+        {
+            get
+            {
+                return SteamVR_Actions.space_TracePath;
+            }
+        }
     }
 }

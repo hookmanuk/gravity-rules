@@ -4,6 +4,10 @@
    "app_key" : "application.generated.unity.gravityrules.exe",
    "bindings" : {
       "/actions/buggy" : {
+         "chords" : [],
+         "haptics" : [],
+         "poses" : [],
+         "skeleton" : [],
          "sources" : [
             {
                "inputs" : {
@@ -283,6 +287,10 @@
          ]
       },
       "/actions/platformer" : {
+         "chords" : [],
+         "haptics" : [],
+         "poses" : [],
+         "skeleton" : [],
          "sources" : [
             {
                "inputs" : {
@@ -323,6 +331,10 @@
          ]
       },
       "/actions/space" : {
+         "chords" : [],
+         "haptics" : [],
+         "poses" : [],
+         "skeleton" : [],
          "sources" : [
             {
                "inputs" : {
@@ -343,11 +355,6 @@
                "path" : "/user/hand/right/input/a"
             },
             {
-               "inputs" : {},
-               "mode" : "none",
-               "path" : "/user/hand/right/input/system"
-            },
-            {
                "inputs" : {
                   "pull" : {
                      "output" : "/actions/space/in/rewind"
@@ -355,6 +362,20 @@
                },
                "mode" : "trigger",
                "path" : "/user/hand/left/input/trigger"
+            },
+            {
+               "inputs" : {},
+               "mode" : "none",
+               "path" : "/user/hand/left/input/a"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/space/in/tracepath"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/b"
             }
          ]
       }
