@@ -40,6 +40,7 @@ public class GameState : MonoBehaviour
     private Attractor[] Attractors;
     private LineRenderer LineRenderer;
     public bool IsTracingPath;
+    public bool IsTracePathPlanetHit;
 
     public float WorldRate = 60f;
     public float ScoreMultiplier = 1f;
@@ -78,7 +79,7 @@ public class GameState : MonoBehaviour
 
         FutureMes = new List<GameObject>();
 
-        for (int i = 0; i < 40; i++)
+        for (int i = 0; i < 80; i++)
         {
             FutureMes.Add(Instantiate(FutureMe));
         }
@@ -87,9 +88,9 @@ public class GameState : MonoBehaviour
         Attractors = FindObjectsOfType<Attractor>();
 
         LineRenderer = gameObject.AddComponent<LineRenderer>();
-        LineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-        LineRenderer.widthMultiplier = 0.01f;
-        LineRenderer.positionCount = 41;
+        LineRenderer.material = new Material(Shader.Find("Sprites/Default"));        
+        LineRenderer.widthMultiplier = 0.004f;
+        LineRenderer.positionCount = 81;
     }
 
     private async void UpdateHighscores()
@@ -206,6 +207,7 @@ public class GameState : MonoBehaviour
 
             if (IsTracingPath)
             {
+                IsTracePathPlanetHit = false;
                 if (!LineRenderer.enabled)
                 {
                     LineRenderer.enabled = true;
@@ -214,21 +216,34 @@ public class GameState : MonoBehaviour
                 LineRenderer.SetPosition(0, Spaceship.transform.position);
 
                 //loop through future mes and apply forces to them from both the current velocity and attractor planets
-                for (int i = 0; i < 40; i++)
+                for (int i = 0; i < 80; i++)
                 {
+                    if (IsTracePathPlanetHit)
+                    {
+                        break;
+                    }
                     Transform previousTransform;
 
                     previousTransform = (i == 0 ? Spaceship.transform : FutureMes[i - 1].transform);
 
-                    FutureMes[i].transform.position = previousTransform.position + (_player.velocity * 0.1f); //not sure about this 0.1 multiplier
+                    //not sure about this 0.5 multiplier, the larger the number the further out the trace path will go
+                    FutureMes[i].transform.position = previousTransform.position + (_player.velocity * 0.5f); 
 
                     foreach (Attractor attractor in Attractors)
                     {
-                        Console.WriteLine(i.ToString() + ": " + attractor.GetForce(previousTransform).magnitude);
-                        FutureMes[i].transform.position += (attractor.GetForce(previousTransform) * 0.1f); //not sure about this 0.1 multiplier
+                        Console.WriteLine(i.ToString() + ": " + attractor.GetForce(FutureMes[i].transform).magnitude);
+                        //not sure about this 2 multiplier, seems like far away from planets too little force is applied, close to planets too much force applied!
+                        FutureMes[i].transform.position += (attractor.GetForce(FutureMes[i].transform) * 2f); 
                     }
-
-                    LineRenderer.SetPosition(i + 1, FutureMes[i].transform.position);
+                                                            
+                    LineRenderer.SetPosition(i + 1, FutureMes[i].transform.position);                         
+                    
+                    if (i == 79 && !IsTracePathPlanetHit)
+                    {
+                        //only set the colour back to white if this frame path hasn't hit an attractor, doesn't seem to work properly though
+                        //maybe the attractor collider trigger happens too infrequently for this to work?
+                        SetPathTraceColour(false);
+                    }
                 }
             }
             else
@@ -238,6 +253,21 @@ public class GameState : MonoBehaviour
                     LineRenderer.enabled = false;
                 }
             }
+        }
+    }
+
+    public void SetPathTraceColour(bool isHit)
+    {
+        if (isHit)
+        {
+            IsTracePathPlanetHit = true;
+            LineRenderer.startColor = new Color(200, 0, 0);
+            LineRenderer.endColor = new Color(200, 0, 0);
+        }
+        else
+        {
+            LineRenderer.startColor = new Color(100, 100, 100);
+            LineRenderer.endColor = new Color(100, 100, 100);
         }
     }
 
