@@ -61,7 +61,7 @@ namespace BangsPhysics
 
                 myClone.OnFixedUpdate();
 
-                if ((index+1) % ticksBetweenPoints == 0)
+                if ((index) % ticksBetweenPoints == 0)
                 {
                     futurePoints.Add(myClone.position);
                 }

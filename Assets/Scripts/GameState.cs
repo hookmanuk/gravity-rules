@@ -12,9 +12,7 @@ using Valve.VR;
 
 public class GameState : MonoBehaviour
 {
-    private int _currentCheckpoint = 0;
-    private Vector3 _startPosition;
-    private Quaternion _startRotation;
+    private int _currentCheckpoint = 0;    
     private BangsPhysics.RigidBody _player;    
     private float _scorePrevious = 10000;
 
@@ -25,7 +23,6 @@ public class GameState : MonoBehaviour
     public SimpleHelvetica HighScoresText;
     public SimpleHelvetica YourScoreText;
     public SimpleHelvetica InstructionsText;
-    public GameObject FutureMe;
     public GameObject Spaceship;
     
     public float Score = 10000;
@@ -36,7 +33,6 @@ public class GameState : MonoBehaviour
     private HUD _hud;
     private float _startScore;
     private string _playerName = "";
-    private List<GameObject> FutureMes;
     private Attractor[] Attractors;
     private LineRenderer LineRenderer;
     public bool IsTracingPath;
@@ -54,6 +50,7 @@ public class GameState : MonoBehaviour
     public bool IsRewinding;
     private int ScoreEntering;
     private Audio _audio;
+    public int TotalSimulatePoints = 40;
 
     private void Awake()
     {
@@ -68,9 +65,7 @@ public class GameState : MonoBehaviour
         _audio = GetComponentInChildren<Audio>();
         _audio.Forwards(true);
 
-        Transform startTransform = GetComponent<Transform>();
-        _startPosition = new Vector3(startTransform.position.x, startTransform.position.y, startTransform.position.z);
-        _startRotation = new Quaternion(startTransform.rotation.x, startTransform.rotation.y, startTransform.rotation.z, startTransform.rotation.w);
+        Transform startTransform = GetComponent<Transform>();        
         Restart.onStateDown += Restart_onStateDown;
         TracePath.onStateDown += TracePath_onStateDown;
         TracePath.onStateUp += TracePath_onStateUp;
@@ -80,22 +75,14 @@ public class GameState : MonoBehaviour
         _hud = HUD.GetComponent<HUD>();
 
         ScoreManager = new scoremanager();        
-        UpdateHighscores();
-
-        FutureMes = new List<GameObject>();
-
-        for (int i = 0; i < 80; i++)
-        {
-            FutureMes.Add(Instantiate(FutureMe));
-        }
-        FutureMe.SetActive(false);
+        UpdateHighscores();        
 
         Attractors = FindObjectsOfType<Attractor>();
 
         LineRenderer = gameObject.AddComponent<LineRenderer>();
         LineRenderer.material = new Material(Shader.Find("Sprites/Default"));        
         LineRenderer.widthMultiplier = 0.04f;
-        LineRenderer.positionCount = 81;
+        LineRenderer.positionCount = TotalSimulatePoints;
     }
 
     private async void UpdateHighscores()
@@ -219,7 +206,7 @@ public class GameState : MonoBehaviour
                     LineRenderer.enabled = true;
                 }
 
-                List<Vector3> futurePoints = BangsPhysics.PhysicsManager.Instance.ForwardSimulate(_player, 20, 60);
+                List<Vector3> futurePoints = BangsPhysics.PhysicsManager.Instance.ForwardSimulate(_player, TotalSimulatePoints, 60);
 
                 int index = 0;
                 foreach(var position in futurePoints)
@@ -397,8 +384,7 @@ public class GameState : MonoBehaviour
     public void ReInitGame()
     {
         ToggleShip(true);
-        GetComponent<Transform>().SetPositionAndRotation(_startPosition, _startRotation);
-
+        
         foreach (var item in Attractors)
         {
             item.ResetAttractor();

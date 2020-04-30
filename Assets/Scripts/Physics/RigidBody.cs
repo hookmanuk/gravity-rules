@@ -9,6 +9,8 @@ namespace BangsPhysics
 
     public class RigidBody : MonoBehaviour
     {
+        private Vector3 _startPosition;
+        private Quaternion _startRotation;
         public Vector3 position { get; set; }
         public Vector3 velocity { get; set; }
         public Vector3 acceleration { get; private set; }
@@ -30,8 +32,11 @@ namespace BangsPhysics
         public void Start()
         {
             PhysicsManager.Instance.rigidBodies.Add(this);
-
+            
             position = transform.position;
+
+            _startPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+            _startRotation = new Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
         }
 
         public void OnDestroy()
@@ -49,6 +54,9 @@ namespace BangsPhysics
             velocity = Vector3.zero;
             acceleration = Vector3.zero;
             totalForce = Vector3.zero;
+
+            position = _startPosition;
+            rotation = _startRotation;
         }
 
         public void OnFixedUpdate()
