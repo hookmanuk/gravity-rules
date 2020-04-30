@@ -9,7 +9,7 @@ public class Thruster : MonoBehaviour
     // a reference to the action
     public SteamVR_Action_Single Thrust;
 
-    private Rigidbody _player;
+    private BangsPhysics.RigidBody _player;
     private GameObject _controller;
     private float f_Multiplier = 0.3f;
     private ParticleSystem _particleSystem;
@@ -51,7 +51,7 @@ public class Thruster : MonoBehaviour
 
             if (_controller != null)
             {
-                _player.AddForce(_controller.transform.forward * f_Multiplier * Thrust.axis, ForceMode.Force);
+                _player.AddForce(_controller.transform.forward * f_Multiplier * Thrust.axis);
 
                 _gameState.ThrustActiveUpdateScore();
 
@@ -70,7 +70,7 @@ public class Thruster : MonoBehaviour
 
     void OnEnable()
     {        
-        _player = GameObject.FindWithTag("PlayerBody").GetComponent<Rigidbody>();
+        _player = GameObject.FindWithTag("PlayerBody").GetComponent<BangsPhysics.RigidBody>();
         _particleSystem = GetComponent<ParticleSystem>();
     }
 

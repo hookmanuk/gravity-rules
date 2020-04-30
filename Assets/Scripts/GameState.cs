@@ -15,7 +15,7 @@ public class GameState : MonoBehaviour
     private int _currentCheckpoint = 0;
     private Vector3 _startPosition;
     private Quaternion _startRotation;
-    private Rigidbody _player;    
+    private BangsPhysics.RigidBody _player;    
     private float _scorePrevious = 10000;
 
     public SteamVR_Action_Boolean Restart;
@@ -55,11 +55,16 @@ public class GameState : MonoBehaviour
     private int ScoreEntering;
     private Audio _audio;
 
+    private void Awake()
+    {
+        gameObject.AddComponent<BangsPhysics.PhysicsManager>();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         _startScore = Score;
-        _player = GameObject.FindWithTag("PlayerBody").GetComponent<Rigidbody>();
+        _player = GameObject.FindWithTag("PlayerBody").GetComponent<BangsPhysics.RigidBody>();
         _audio = GetComponentInChildren<Audio>();
         _audio.Forwards(true);
 
@@ -89,7 +94,7 @@ public class GameState : MonoBehaviour
 
         LineRenderer = gameObject.AddComponent<LineRenderer>();
         LineRenderer.material = new Material(Shader.Find("Sprites/Default"));        
-        LineRenderer.widthMultiplier = 0.004f;
+        LineRenderer.widthMultiplier = 0.04f;
         LineRenderer.positionCount = 81;
     }
 
@@ -205,15 +210,24 @@ public class GameState : MonoBehaviour
 
             _hud.SetSpeed(_player.velocity.magnitude / 100f);
 
-            if (IsTracingPath)
+            
+            //if (IsTracingPath)
             {
                 IsTracePathPlanetHit = false;
                 if (!LineRenderer.enabled)
                 {
                     LineRenderer.enabled = true;
                 }
-                
-                LineRenderer.SetPosition(0, Spaceship.transform.position);
+
+                List<Vector3> futurePoints = BangsPhysics.PhysicsManager.Instance.ForwardSimulate(_player, 20, 60);
+
+                int index = 0;
+                foreach(var position in futurePoints)
+                {
+                    LineRenderer.SetPosition(index++, position);
+                }
+
+/*                LineRenderer.SetPosition(0, Spaceship.transform.position);
 
                 //loop through future mes and apply forces to them from both the current velocity and attractor planets
                 for (int i = 0; i < 80; i++)
@@ -244,15 +258,15 @@ public class GameState : MonoBehaviour
                         //maybe the attractor collider trigger happens too infrequently for this to work?
                         SetPathTraceColour(false);
                     }
-                }
+                }*/
             }
-            else
+            /*else
             {
                 if (LineRenderer.enabled)
                 {
                     LineRenderer.enabled = false;
                 }
-            }
+            }*/
         }
     }
 
@@ -390,7 +404,7 @@ public class GameState : MonoBehaviour
             item.ResetAttractor();
         }
 
-        _player.velocity = new Vector3(0, 0, 0);
+        _player.Reset();
         _player.isKinematic = false;
         Score = _startScore;
         _hud.SetScore(Convert.ToInt32(Score));
