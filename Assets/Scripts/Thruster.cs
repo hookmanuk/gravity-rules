@@ -14,6 +14,7 @@ public class Thruster : MonoBehaviour
     private float f_Multiplier = 0.3f;
     private ParticleSystem _particleSystem;
     private GameState _gameState;
+    public SteamVR_Action_Vector2 ThrustDirection;
 
     public AudioSource ThrustSound;
 
@@ -31,12 +32,14 @@ public class Thruster : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {        
-        if (!_gameState.IsFinished && Thrust.axis != 0)
+        if (!_gameState.IsFinished && Thrust.axis > 0)
         {
             if (!_gameState.Started)
             {
                 _gameState.Started = true;
-                    
+                _gameState.IsTracingPath = true;
+
+
                 _gameState.FadeOutText();
             }
             //get controller

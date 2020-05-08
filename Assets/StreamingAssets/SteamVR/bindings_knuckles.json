@@ -376,6 +376,15 @@
                },
                "mode" : "button",
                "path" : "/user/hand/left/input/b"
+            },
+            {
+               "inputs" : {
+                  "position" : {
+                     "output" : "/actions/space/in/thrustdirection"
+                  }
+               },
+               "mode" : "joystick",
+               "path" : "/user/hand/right/input/thumbstick"
             }
          ]
       }

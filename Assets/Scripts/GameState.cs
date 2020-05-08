@@ -1,4 +1,5 @@
 ﻿using AzureTableStorage;
+using BangsPhysics;
 using HighScores;
 using System;
 using System.Collections;
@@ -18,7 +19,7 @@ public class GameState : MonoBehaviour
 
     public SteamVR_Action_Boolean Restart;
     public SteamVR_Action_Boolean TracePath;
-    public SteamVR_Action_Single Rewind;
+    public SteamVR_Action_Single Rewind;    
     public GameObject HUD;
     public SimpleHelvetica HighScoresText;
     public SimpleHelvetica YourScoreText;
@@ -35,7 +36,7 @@ public class GameState : MonoBehaviour
     private string _playerName = "";
     private Attractor[] Attractors;
     private LineRenderer LineRenderer;
-    public bool IsTracingPath;
+    public bool IsTracingPath = true;
     public bool IsTracePathPlanetHit;
 
     public float WorldRate = 60f;
@@ -43,14 +44,35 @@ public class GameState : MonoBehaviour
     public float ScoreThrustMultiplier = 5f;
     public float ScoreRewindMultiplier = 0.8f;
     public scoremanager ScoreManager;
-    public List<highscore> Highscores;
-    public bool Started;
+    public List<highscore> Highscores;    
     public bool IsFinished;
-    public bool IsWaitingForName;
-    public bool IsRewinding;
+    public bool IsWaitingForName;    
     private int ScoreEntering;
     private Audio _audio;
     public int TotalSimulatePoints = 40;
+
+    private bool _started;
+
+    public bool Started
+    {
+        get { return _started; }
+        set { 
+            _started = value;
+            BangsPhysics.PhysicsManager.Instance.Started = value;
+        }
+    }
+
+    private bool _isRewinding;
+    public bool IsRewinding
+    {
+        get { return _isRewinding; }
+        set
+        {
+            _isRewinding = value;
+            BangsPhysics.PhysicsManager.Instance.IsRewinding = value;
+        }
+    }
+
 
     private void Awake()
     {
@@ -68,7 +90,7 @@ public class GameState : MonoBehaviour
         Transform startTransform = GetComponent<Transform>();        
         Restart.onStateDown += Restart_onStateDown;
         TracePath.onStateDown += TracePath_onStateDown;
-        TracePath.onStateUp += TracePath_onStateUp;
+        //TracePath.onStateUp += TracePath_onStateUp;
 
         _frames = new Stack<FrameInfo>();
 
@@ -80,7 +102,7 @@ public class GameState : MonoBehaviour
         Attractors = FindObjectsOfType<Attractor>();
 
         LineRenderer = gameObject.AddComponent<LineRenderer>();
-        LineRenderer.material = new Material(Shader.Find("Sprites/Default"));        
+        LineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         LineRenderer.widthMultiplier = 0.04f;
         LineRenderer.positionCount = TotalSimulatePoints;
     }
@@ -124,13 +146,13 @@ public class GameState : MonoBehaviour
 
     private void TracePath_onStateDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-        IsTracingPath = true;
+        IsTracingPath = !IsTracingPath;
     }
 
-    private void TracePath_onStateUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
-    {
-        IsTracingPath = false;
-    }
+    //private void TracePath_onStateUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    //{
+    //    IsTracingPath = false;
+    //}
 
     private void EnterName()
     {
@@ -198,7 +220,7 @@ public class GameState : MonoBehaviour
             _hud.SetSpeed(_player.velocity.magnitude / 100f);
 
             
-            //if (IsTracingPath)
+            if (IsTracingPath)
             {
                 IsTracePathPlanetHit = false;
                 if (!LineRenderer.enabled)
@@ -206,10 +228,12 @@ public class GameState : MonoBehaviour
                     LineRenderer.enabled = true;
                 }
 
-                List<Vector3> futurePoints = BangsPhysics.PhysicsManager.Instance.ForwardSimulate(_player, TotalSimulatePoints, 60);
+                PathResult pathResult = BangsPhysics.PhysicsManager.Instance.ForwardSimulate(_player, TotalSimulatePoints, 60, Spaceship.transform.position - _player.position);
+
+                SetPathTraceColour(pathResult.State);
 
                 int index = 0;
-                foreach(var position in futurePoints)
+                foreach(var position in pathResult.FuturePoints)
                 {
                     LineRenderer.SetPosition(index++, position);
                 }
@@ -247,28 +271,34 @@ public class GameState : MonoBehaviour
                     }
                 }*/
             }
-            /*else
+            else
             {
                 if (LineRenderer.enabled)
                 {
                     LineRenderer.enabled = false;
                 }
-            }*/
+            }
         }
     }
 
-    public void SetPathTraceColour(bool isHit)
+    public void SetPathTraceColour(FutureState state)
     {
-        if (isHit)
+        switch (state)
         {
-            IsTracePathPlanetHit = true;
-            LineRenderer.startColor = new Color(200, 0, 0);
-            LineRenderer.endColor = new Color(200, 0, 0);
-        }
-        else
-        {
-            LineRenderer.startColor = new Color(100, 100, 100);
-            LineRenderer.endColor = new Color(100, 100, 100);
+            case FutureState.OK:
+                LineRenderer.startColor = new Color(100, 100, 100);
+                LineRenderer.endColor = new Color(100, 100, 100);
+                break;
+            case FutureState.PlanetHit:
+                LineRenderer.startColor = new Color(200, 0, 0);
+                LineRenderer.endColor = new Color(200, 0, 0);
+                break;
+            case FutureState.CheckpointHit:
+                LineRenderer.startColor = new Color(0, 200, 0);
+                LineRenderer.endColor = new Color(0, 200, 0);
+                break;
+            default:
+                break;
         }
     }
 
@@ -313,7 +343,8 @@ public class GameState : MonoBehaviour
         if (frame != null)
         {
             GetComponent<Transform>().SetPositionAndRotation(frame.PlayerPosition, frame.PlayerRotation);
-            _player.velocity = frame.PlayerVelocity;
+            _player.GetComponent<RigidBody>().position = frame.PlayerPosition;
+            _player.GetComponent<RigidBody>().velocity = frame.PlayerVelocity;
             if (frame.CurrentCheckpoint != _currentCheckpoint)
             {
                 _currentCheckpoint = frame.CurrentCheckpoint;

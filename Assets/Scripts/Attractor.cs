@@ -30,20 +30,7 @@ public class Attractor : MonoBehaviour
 			ResetAttractor();
 			_gameState.ExplodeSpaceship();			
 		}	
-	}
-
-	private void OnTriggerStay(Collider other)
-	{
-		if (other.gameObject.name.StartsWith("FutureMe"))
-		{			
-			_gameState.SetPathTraceColour(true);
-		}
-	}
-
-	private void OnTriggerExit(Collider other)
-	{
-		
-	}
+	}	
 
 	public void ResetAttractor()
 	{

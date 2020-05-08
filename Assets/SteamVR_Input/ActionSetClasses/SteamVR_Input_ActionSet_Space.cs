@@ -48,5 +48,13 @@ namespace Valve.VR
                 return SteamVR_Actions.space_TracePath;
             }
         }
+        
+        public virtual SteamVR_Action_Vector2 ThrustDirection
+        {
+            get
+            {
+                return SteamVR_Actions.space_ThrustDirection;
+            }
+        }
     }
 }

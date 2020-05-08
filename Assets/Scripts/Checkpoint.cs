@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using BangsPhysics;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ public class Checkpoint : MonoBehaviour
     public int Number;
     private Rigidbody _player;
     private GameObject _spaceShip;
-    private bool _isActiveCheckpoint = true;
+    public bool IsActiveCheckpoint = true;
 
     // Start is called before the first frame update
     void Start()
@@ -17,19 +18,20 @@ public class Checkpoint : MonoBehaviour
 
         if (Number > 0)
         {
-            _isActiveCheckpoint = false; 
+            SetActive(false);            
         }
         else
         {
-            GetComponent<Transform>().localScale = new Vector3(10f, 10f, 10f);
+            SetActive(true);            
         }
     }
 
     public void SetActive(bool isActive)
     {
-        _isActiveCheckpoint = isActive;
+        IsActiveCheckpoint = isActive;
         if (isActive)
         {
+            PhysicsManager.Instance.ActiveCheckpoint = this;
             GetComponent<Transform>().localScale = new Vector3(10f, 10f, 10f);
         }
         else
@@ -41,7 +43,7 @@ public class Checkpoint : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_isActiveCheckpoint)
+        if (IsActiveCheckpoint)
         {
             float dist = Vector3.Distance(_spaceShip.transform.position, transform.position);            
 

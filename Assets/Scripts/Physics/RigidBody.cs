@@ -61,7 +61,7 @@ namespace BangsPhysics
 
         public void OnFixedUpdate()
         {
-            if (!isKinematic)
+            if (!isKinematic && !PhysicsManager.Instance.IsRewinding)
             {
                 acceleration = totalForce / mass;
                 velocity += acceleration * Time.fixedDeltaTime;
@@ -73,7 +73,7 @@ namespace BangsPhysics
 
         private void Update()
         {
-            if (!isKinematic)
+            if (!isKinematic && !PhysicsManager.Instance.IsRewinding)
             {
                 transform.position = position;
             }

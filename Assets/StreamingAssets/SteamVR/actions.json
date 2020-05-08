@@ -99,6 +99,11 @@
     {
       "name": "/actions/Space/in/TracePath",
       "type": "boolean"
+    },
+    {
+      "name": "/actions/Space/in/ThrustDirection",
+      "type": "vector2",
+      "requirement": "mandatory"
     }
   ],
   "action_sets": [
