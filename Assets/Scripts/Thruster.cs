@@ -32,7 +32,7 @@ public class Thruster : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {        
-        if (!_gameState.IsFinished && Thrust.axis > 0)
+        if (!_gameState.IsFinished && ThrustDirection.axis.magnitude > 0)
         {
             if (!_gameState.Started)
             {
@@ -43,18 +43,22 @@ public class Thruster : MonoBehaviour
                 _gameState.FadeOutText();
             }
             //get controller
-            if (Thrust.activeDevice == SteamVR_Input_Sources.RightHand)
+            if (ThrustDirection.activeDevice == SteamVR_Input_Sources.RightHand)
             {
                 _controller = GameObject.FindWithTag("RightController");
             }
-            else if (Thrust.activeDevice == SteamVR_Input_Sources.LeftHand)
+            else if (ThrustDirection.activeDevice == SteamVR_Input_Sources.LeftHand)
             {
                 _controller = GameObject.FindWithTag("LeftController");
             }
 
             if (_controller != null)
             {
-                _player.AddForce(_controller.transform.forward * f_Multiplier * Thrust.axis);
+                _player.AddForce(_controller.transform.forward * f_Multiplier * ThrustDirection.axis.y);
+                _player.AddForce(_controller.transform.right * f_Multiplier * ThrustDirection.axis.x);
+
+                //rotate the engine thrusters to match direction of thrust
+                transform.localRotation = Quaternion.Euler(0, (float)(Mathf.Atan2(ThrustDirection.axis.x, ThrustDirection.axis.y) * 180 / Math.PI), 0);
 
                 _gameState.ThrustActiveUpdateScore();
 

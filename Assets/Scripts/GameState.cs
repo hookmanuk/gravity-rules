@@ -103,7 +103,7 @@ public class GameState : MonoBehaviour
 
         LineRenderer = gameObject.AddComponent<LineRenderer>();
         LineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-        LineRenderer.widthMultiplier = 0.04f;
+        LineRenderer.widthMultiplier = 0.004f;
         LineRenderer.positionCount = TotalSimulatePoints;
     }
 
