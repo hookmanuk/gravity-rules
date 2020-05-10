@@ -25,7 +25,10 @@ public class GameState : MonoBehaviour
     public SimpleHelvetica YourScoreText;
     public SimpleHelvetica InstructionsText;
     public GameObject Spaceship;
-    
+    public GameObject[] Asteroids;
+    public List<GameObject> InGameAsteroids;
+    public int AsteroidRange;
+
     public float Score = 10000;
 
     private Stack<FrameInfo> _frames;
@@ -50,6 +53,8 @@ public class GameState : MonoBehaviour
     private int ScoreEntering;
     private Audio _audio;
     public int TotalSimulatePoints = 40;
+    public static GameState Instance;
+
 
     private bool _started;
 
@@ -82,6 +87,11 @@ public class GameState : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+
         _startScore = Score;
         _player = GameObject.FindWithTag("PlayerBody").GetComponent<BangsPhysics.RigidBody>();
         _audio = GetComponentInChildren<Audio>();
@@ -105,6 +115,8 @@ public class GameState : MonoBehaviour
         LineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         LineRenderer.widthMultiplier = 0.004f;
         LineRenderer.positionCount = TotalSimulatePoints;
+
+        GenerateAsteroids();
     }
 
     private async void UpdateHighscores()
@@ -277,8 +289,10 @@ public class GameState : MonoBehaviour
                 {
                     LineRenderer.enabled = false;
                 }
-            }
+            }            
         }
+
+        RepositionAsteroids();
     }
 
     public void SetPathTraceColour(FutureState state)
@@ -489,5 +503,43 @@ public class GameState : MonoBehaviour
         {
             item.enabled = enable;
         }        
+    }
+
+    private void RepositionAsteroids()
+    {        
+        foreach (GameObject asteroidObject in InGameAsteroids)
+        {
+            if (asteroidObject.GetComponent<Asteroid>().IsOutOfRange)
+            {
+                asteroidObject.transform.position = (Spaceship.transform.position + UnityEngine.Random.insideUnitSphere * AsteroidRange) + Spaceship.transform.forward * 80;
+                asteroidObject.GetComponent<Asteroid>().IsOutOfRange = false;
+            }
+        }
+    }
+
+    private void GenerateAsteroids()
+    {
+        int intTotalAsteroids;        
+
+        intTotalAsteroids = 1000;        
+                      
+        System.Random r = new System.Random();        
+        for (int i = 0; i < intTotalAsteroids; i++)
+        {
+            //render asteroids nearby spaceship
+            GameObject asteroidObject = Instantiate(Asteroids[r.Next(0, 7)],
+                    (Spaceship.transform.position + UnityEngine.Random.insideUnitSphere * AsteroidRange) + Spaceship.transform.forward * 80,
+                    //new Vector3(
+                    //    r.Next((int)Spaceship.transform.position.x, (int)Spaceship.transform.position.x + (int)Math.Max(10, (Spaceship.transform.forward.x * 100))),
+                    //    r.Next((int)Spaceship.transform.position.y, (int)Spaceship.transform.position.y + (int)Math.Max(10, (Spaceship.transform.forward.y * 100))),
+                    //    r.Next((int)Spaceship.transform.position.z, (int)Spaceship.transform.position.z + (int)Math.Max(10, (Spaceship.transform.forward.z * 100)))
+                    //),
+                    new Quaternion(r.Next(0, 360), r.Next(0, 360), r.Next(0, 360), r.Next(0, 360))
+                );
+
+            asteroidObject.GetComponent<Asteroid>().IsClone = true;
+
+            InGameAsteroids.Add(asteroidObject);            
+        }
     }
 }
