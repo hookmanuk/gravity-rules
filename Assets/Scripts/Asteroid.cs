@@ -23,4 +23,12 @@ public class Asteroid : MonoBehaviour
             IsOutOfRange = true;
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Spaceship")
+        {
+            GameState.Instance.ExplodeSpaceship();
+        }
+    }
 }
